@@ -23,6 +23,7 @@ export function useWebRTC(socketRef, localStreamRef) {
   const peerRef = useRef(null);
   const audioContextRef = useRef(null);
   const audioElementRef = useRef(null); // <audio> element for reliable playback
+  const localAudioElementRef = useRef(null); // <audio> element for self-monitoring
   const iceCandidateQueue = useRef([]);
   const remoteDescSet = useRef(false);
 
@@ -145,6 +146,24 @@ export function useWebRTC(socketRef, localStreamRef) {
       console.log('[webrtc] connection state:', peer.connectionState);
     };
 
+    // Self-monitoring: hear your own voice through the cathedral reverb.
+    // Created here so it starts exactly when the portal opens.
+    // Muted by default on speakers to avoid feedback — only audible with headphones.
+    const localAudioEl = document.createElement('audio');
+    localAudioEl.srcObject = localStreamRef.current;
+    localAudioEl.autoplay = true;
+    localAudioEl.playsInline = true;
+    localAudioEl.muted = false;
+    localAudioEl.volume = 0.4;
+    localAudioEl.style.position = 'absolute';
+    localAudioEl.style.width = '0';
+    localAudioEl.style.height = '0';
+    localAudioEl.style.opacity = '0';
+    document.body.appendChild(localAudioEl);
+    localAudioElementRef.current = localAudioEl;
+    localAudioEl.play().catch((e) => console.warn('[audio] local play() failed:', e));
+    console.log('[audio] self-monitoring started');
+
     if (isInitiator) {
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
@@ -200,6 +219,11 @@ export function useWebRTC(socketRef, localStreamRef) {
       audioElementRef.current.srcObject = null;
       audioElementRef.current.remove();
       audioElementRef.current = null;
+    }
+    if (localAudioElementRef.current) {
+      localAudioElementRef.current.srcObject = null;
+      localAudioElementRef.current.remove();
+      localAudioElementRef.current = null;
     }
     // Remove any reverb elements
     document.querySelectorAll('audio').forEach(el => {
