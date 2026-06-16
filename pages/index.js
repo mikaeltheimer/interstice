@@ -86,6 +86,16 @@ function Home() {
       .then((stream) => {
         localStreamRef.current = stream;
         console.log('[mic] granted');
+        // On iOS Safari, force loudspeaker instead of earpiece.
+        // This must be done on an audio element attached to the stream.
+        if (typeof Audio !== 'undefined') {
+          const silentAudio = new Audio();
+          silentAudio.srcObject = stream;
+          silentAudio.muted = true;
+          if (silentAudio.setSinkId) {
+            silentAudio.setSinkId('speaker').catch(() => {});
+          }
+        }
         setMicGranted(true);
       })
       .catch((err) => {

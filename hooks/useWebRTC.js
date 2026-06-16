@@ -29,9 +29,16 @@ export function useWebRTC(socketRef, localStreamRef) {
 
   const setupAudioPipeline = useCallback(async (remoteStream) => {
     console.log('[audio] setting up pipeline');
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    audioContextRef.current = audioContext;
-    if (audioContext.state === 'suspended') await audioContext.resume();
+    // Reuse AudioContext created during startCall (user gesture context).
+    // If not available, create a new one and try to resume.
+    let audioContext = audioContextRef.current;
+    if (!audioContext) {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      audioContextRef.current = audioContext;
+    }
+    if (audioContext.state === 'suspended') {
+      try { await audioContext.resume(); } catch(e) { console.warn('[audio] resume failed:', e); }
+    }
 
     const convolver = await createCathedralReverb(audioContext);
     const source = audioContext.createMediaStreamSource(remoteStream);
@@ -58,6 +65,19 @@ export function useWebRTC(socketRef, localStreamRef) {
 
     if (!localStreamRef.current) {
       throw new Error('No microphone stream — was permission granted?');
+    }
+
+    // Create AudioContext here, during startCall, which is triggered by
+    // portal-open which follows a user gesture (holding the button).
+    // This ensures the context is created in a gesture-trusted context.
+    if (!audioContextRef.current) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AudioCtx();
+      audioContextRef.current = ctx;
+      if (ctx.state === 'suspended') {
+        try { await ctx.resume(); } catch(e) { console.warn('[audio] initial resume failed:', e); }
+      }
+      console.log('[audio] AudioContext created in gesture context, state:', ctx.state);
     }
 
     const peer = new RTCPeerConnection({
