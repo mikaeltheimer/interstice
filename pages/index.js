@@ -205,7 +205,7 @@ function Home() {
               </button>
             </div>
 
-            {state === STATE.PORTAL_OPEN && (
+            {(state === STATE.PARTNER_HERE || state === STATE.PORTAL_OPEN) && (
               <div className="controls">
                 <button
                   className={`toggle-btn ${selfMonitor ? 'on' : 'off'}`}

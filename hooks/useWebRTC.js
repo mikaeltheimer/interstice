@@ -39,6 +39,8 @@ export function useWebRTC(socketRef, localStreamRef) {
   const remoteReverbElRef = useRef(null);
   const localReverbElRef = useRef(null);
   const localSelfMonitorRef = useRef({ enabled: true, gainNode: null });
+  // Preference set before pipeline is built — applied when pipeline starts
+  const selfMonitorPrefRef = useRef(true);
   const iceCandidateQueue = useRef([]);
   const remoteDescSet = useRef(false);
 
@@ -87,6 +89,8 @@ export function useWebRTC(socketRef, localStreamRef) {
         localWetGain.gain.value = 0.4;
         // Store gain node so toggle can mute/unmute without rebuilding pipeline
         localSelfMonitorRef.current.gainNode = localWetGain;
+        // Apply preference set before pipeline was built
+        localWetGain.gain.value = selfMonitorPrefRef.current ? 0.4 : 0;
 
         localSource.connect(localConvolver);
         localConvolver.connect(localWetGain);
@@ -107,6 +111,7 @@ export function useWebRTC(socketRef, localStreamRef) {
 
   // Toggle self-monitoring on/off without rebuilding the pipeline
   const setSelfMonitor = useCallback((enabled) => {
+    selfMonitorPrefRef.current = enabled;
     localSelfMonitorRef.current.enabled = enabled;
     const gainNode = localSelfMonitorRef.current.gainNode;
     if (gainNode) {
@@ -206,14 +211,14 @@ export function useWebRTC(socketRef, localStreamRef) {
       if (ref.current) { ref.current.srcObject = null; ref.current.remove(); ref.current = null; }
     });
     document.querySelectorAll('audio').forEach(el => { el.srcObject = null; el.remove(); });
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(t => t.stop());
-      localStreamRef.current = null;
-    }
+    // Do NOT stop localStreamRef tracks here — the mic stream belongs to the
+    // user session, not to this call. stopCall can be called between rooms
+    // and the stream must remain alive for the next connection.
     if (peerRef.current) { peerRef.current.close(); peerRef.current = null; }
     if (audioContextRef.current) { audioContextRef.current.close(); audioContextRef.current = null; }
     convolverRef.current = null;
     localSelfMonitorRef.current = { enabled: true, gainNode: null };
+    selfMonitorPrefRef.current = true;
     iceCandidateQueue.current = [];
     remoteDescSet.current = false;
   }, [localStreamRef]);
