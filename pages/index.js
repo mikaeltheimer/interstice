@@ -4,6 +4,13 @@ import Head from 'next/head';
 import { io } from 'socket.io-client';
 import { useWebRTC } from '../hooks/useWebRTC';
 
+// Detect in-app browsers (Facebook, Instagram, etc.) that block mic access
+function isRestrictedWebView() {
+  if (typeof navigator === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  return /FBAN|FBAV|Instagram|Messenger|LinkedInApp|Twitter|Snapchat|TikTok|MicroMessenger/.test(ua);
+}
+
 const STATE = {
   INTRO: 'intro',
   WAITING_ALONE: 'waiting_alone',
@@ -18,6 +25,7 @@ function Home() {
   const [iHolding, setIHolding] = useState(false);
   const [micError, setMicError] = useState(false);
   const [micGranted, setMicGranted] = useState(false);
+  const [isWebView] = useState(() => typeof window !== 'undefined' && isRestrictedWebView());
   const [selfMonitor, setSelfMonitorState] = useState(true);
 
   const socketRef = useRef(null);
@@ -161,7 +169,17 @@ function Home() {
                   : "L'accès au microphone a été refusé."}
               </p>
             )}
-            {!micGranted ? (
+            {isWebView ? (
+              <div className="webview-warning">
+                <p className="webview-text">
+                  Cette expérience requiert l'accès au microphone.<br />
+                  Ouvrez ce lien dans Safari ou Chrome pour continuer.
+                </p>
+                <button className="enter-btn" onClick={() => window.open(window.location.href, '_blank')}>
+                  Ouvrir dans le navigateur
+                </button>
+              </div>
+            ) : !micGranted ? (
               <>
                 <p className="instruction">Mettez vos écouteurs, puis autorisez le microphone.</p>
                 <button className="enter-btn" onClick={handleRequestMic}>
@@ -279,6 +297,24 @@ function Home() {
         }
         .instruction.granted { color: var(--cathedral-dim); }
         .mic-error { font-size: 0.8rem; color: #8a4a4a; letter-spacing: 0.08em; }
+
+        .webview-warning {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1.5rem;
+          max-width: 320px;
+        }
+
+        .webview-text {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+          color: var(--text-dim);
+          line-height: 1.8;
+          letter-spacing: 0.04em;
+          text-align: center;
+        }
 
         .enter-btn {
           background: none;
