@@ -44,9 +44,7 @@ const COPY = {
 
 function About() {
   const [lang, setLang] = useState('fr');
-
   useEffect(() => { setLang(getBrowserLang()); }, []);
-
   const t = COPY[lang];
 
   return (
@@ -58,6 +56,8 @@ function About() {
       </Head>
 
       <div className="page">
+
+        {/* Lang toggle */}
         <div className="lang-toggle">
           <button className={`lang-btn ${lang === 'fr' ? 'active' : ''}`} onClick={() => setLang('fr')}>FR</button>
           <span className="lang-sep">·</span>
@@ -65,6 +65,7 @@ function About() {
         </div>
 
         <div className="content">
+          {/* Back nav — styled like footer links */}
           <Link href="/" className="nav-back">{t.nav}</Link>
 
           <h1 className="heading">{t.heading}</h1>
@@ -76,26 +77,34 @@ function About() {
             ))}
           </div>
 
-          <Link href="/" className="cta">{t.cta}</Link>
+          {/* CTA — styled like enter-btn */}
+          <Link href="/" className="enter-btn">{t.cta}</Link>
         </div>
 
         <div className="footer">
-          <a href="https://studioexistence.com" target="_blank" rel="noopener noreferrer">{t.footer}</a>
+          <a href="https://studioexistence.com" target="_blank" rel="noopener noreferrer" className="footer-link">{t.footer}</a>
         </div>
       </div>
 
       <style jsx>{`
-        .page {
+        /* Reset overflow so page can scroll */
+        :global(html), :global(body), :global(#__next) {
+          overflow: auto !important;
+          height: auto !important;
           min-height: 100%;
+        }
+
+        .page {
+          min-height: 100vh;
           background: var(--room);
           display: flex;
           flex-direction: column;
           align-items: center;
-          justify-content: center;
-          padding: 4rem 2rem;
+          padding: 5rem 2rem 6rem;
           position: relative;
         }
 
+        /* Lang toggle — identical to index */
         .lang-toggle {
           position: fixed;
           top: 1.5rem;
@@ -106,43 +115,39 @@ function About() {
           z-index: 10;
         }
         .lang-btn {
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-size: 0.85rem;
-          letter-spacing: 0.12em;
-          color: var(--text-dim);
-          padding: 0;
-          transition: color 0.3s;
-          opacity: 0.5;
+          background: none; border: none; cursor: pointer;
+          font-family: 'Cormorant Garamond', serif; font-style: italic;
+          font-size: 0.85rem; letter-spacing: 0.12em;
+          color: var(--text-dim); padding: 0;
+          transition: color 0.3s; opacity: 0.5;
         }
         .lang-btn.active { opacity: 1; color: var(--text); }
         .lang-btn:hover { opacity: 1; color: var(--gold); }
         .lang-sep { font-family: 'Cormorant Garamond', serif; color: var(--text-dim); font-size: 0.85rem; opacity: 0.3; }
 
+        /* Content */
         .content {
-          max-width: 600px;
+          max-width: 580px;
           width: 100%;
           display: flex;
           flex-direction: column;
-          gap: 1.5rem;
+          gap: 1.75rem;
           animation: fadeIn 1s ease;
         }
 
+        /* Back nav — matches footer-link style */
         .nav-back {
-          font-family: 'Inter', sans-serif;
-          font-size: 0.75rem;
-          letter-spacing: 0.15em;
-          text-transform: uppercase;
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: 0.85rem;
+          letter-spacing: 0.12em;
           color: var(--text-dim);
           text-decoration: none;
           opacity: 0.5;
           transition: opacity 0.3s;
-          margin-bottom: 1rem;
+          margin-bottom: 0.5rem;
         }
-        .nav-back:hover { opacity: 1; }
+        .nav-back:hover { opacity: 1; color: var(--gold); }
 
         .heading {
           font-family: 'Cormorant Garamond', serif;
@@ -152,38 +157,38 @@ function About() {
           color: var(--text);
           margin: 0;
         }
-
         .sub {
           font-family: 'Cormorant Garamond', serif;
           font-style: italic;
           font-size: 0.9rem;
           letter-spacing: 0.1em;
           color: var(--text-dim);
-          margin: -0.5rem 0 1rem;
+          margin: -0.75rem 0 0.5rem;
+          opacity: 0.6;
         }
 
+        /* Body text — brighter than before */
         .body { display: flex; flex-direction: column; gap: 1.25rem; }
-
         .para {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(1rem, 2.5vw, 1.15rem);
-          line-height: 1.85;
-          color: var(--text-dim);
+          font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+          line-height: 1.9;
+          color: #b8b0a8;
           letter-spacing: 0.03em;
           margin: 0;
         }
-
         .para-main {
           color: var(--text);
-          font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+          font-size: clamp(1.1rem, 2.8vw, 1.28rem);
           border-left: 1px solid var(--gold-dim);
           padding-left: 1.5rem;
-          margin: 0.5rem 0;
+          margin: 0.25rem 0;
         }
 
-        .cta {
+        /* CTA — identical to enter-btn on index */
+        .enter-btn {
           display: inline-block;
-          margin-top: 1.5rem;
+          margin-top: 0.5rem;
           background: none;
           border: 1px solid var(--waiting);
           color: var(--text);
@@ -196,26 +201,23 @@ function About() {
           text-decoration: none;
           transition: border-color 0.4s, color 0.4s;
           align-self: flex-start;
+          cursor: pointer;
         }
-        .cta:hover { border-color: var(--gold); color: var(--gold); }
+        .enter-btn:hover { border-color: var(--gold); color: var(--gold); }
 
+        /* Footer */
         .footer {
-          position: fixed;
-          bottom: 1.5rem;
-          left: 50%;
-          transform: translateX(-50%);
+          margin-top: 4rem;
+          display: flex;
+          justify-content: center;
         }
-        .footer a {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-size: 0.75rem;
-          letter-spacing: 0.1em;
-          color: var(--text-dim);
-          text-decoration: none;
-          opacity: 0.4;
-          transition: opacity 0.3s;
+        .footer-link {
+          font-family: 'Cormorant Garamond', serif; font-style: italic;
+          font-size: 0.75rem; letter-spacing: 0.1em;
+          color: var(--text-dim); text-decoration: none;
+          opacity: 0.4; transition: opacity 0.3s;
         }
-        .footer a:hover { opacity: 0.8; }
+        .footer-link:hover { opacity: 0.8; }
 
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(8px); }

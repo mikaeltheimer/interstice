@@ -38,6 +38,7 @@ const COPY = {
     btnMic: 'Autoriser le microphone',
     micReady: 'Microphone prêt.',
     btnEnter: 'Entrer',
+    counter: (n) => n === 1 ? `${n} interstice s'est ouvert depuis le début.` : `${n} interstices se sont ouverts depuis le début.`,
     micErrorHttps: 'HTTPS requis pour accéder au microphone.',
     micErrorDenied: "L'accès au microphone a été refusé.",
     alone: 'Cette salle attend une seconde présence.\nIl n\'y a rien à faire, sinon patienter.',
@@ -66,6 +67,7 @@ const COPY = {
     btnMic: 'Allow microphone',
     micReady: 'Microphone ready.',
     btnEnter: 'Enter',
+    counter: (n) => n === 1 ? `${n} interstice has opened since the beginning.` : `${n} interstices have opened since the beginning.`,
     micErrorHttps: 'HTTPS is required to access the microphone.',
     micErrorDenied: 'Microphone access was denied.',
     alone: 'This room is waiting for another soul.\nNothing to do but wait.',
@@ -311,6 +313,10 @@ function Home() {
             <p className="subtitle">{t.subtitle.split('\n').map((line, i) => (
               <span key={i}>{line}{i === 0 && <br />}</span>
             ))}</p>
+            {totalConnections !== null && totalConnections > 0 && (
+              <p className="counter">{t.counter(totalConnections)}</p>
+            )}
+
             {micError && (
               <p className="mic-error">
                 {typeof navigator !== 'undefined' && !navigator.mediaDevices ? t.micErrorHttps : t.micErrorDenied}
@@ -496,6 +502,16 @@ function Home() {
         .instruction { font-size: 0.8rem; letter-spacing: 0.12em; color: var(--gold-dim); text-transform: uppercase; }
         .instruction.granted { color: var(--cathedral-dim); }
         .mic-error { font-size: 0.8rem; color: #8a4a4a; letter-spacing: 0.08em; }
+        .counter {
+          font-family: 'Cormorant Garamond', serif;
+          font-style: italic;
+          font-size: 0.85rem;
+          letter-spacing: 0.08em;
+          color: var(--text-dim);
+          opacity: 0.5;
+          text-align: center;
+        }
+
         .enter-btn {
           background: none; border: 1px solid var(--waiting); color: var(--text);
           font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 300;
