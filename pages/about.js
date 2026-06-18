@@ -143,11 +143,11 @@ function About() {
           letter-spacing: 0.12em;
           color: var(--text-dim);
           text-decoration: none;
-          opacity: 0.5;
-          transition: opacity 0.3s;
+          transition: color 0.3s;
           margin-bottom: 0.5rem;
+          display: inline-block;
         }
-        .nav-back:hover { opacity: 1; color: var(--gold); }
+        .nav-back:hover { color: var(--gold); }
 
         .heading {
           font-family: 'Cormorant Garamond', serif;
@@ -215,9 +215,9 @@ function About() {
           font-family: 'Cormorant Garamond', serif; font-style: italic;
           font-size: 0.75rem; letter-spacing: 0.1em;
           color: var(--text-dim); text-decoration: none;
-          opacity: 0.4; transition: opacity 0.3s;
+          transition: color 0.3s;
         }
-        .footer-link:hover { opacity: 0.8; }
+        .footer-link:hover { color: var(--gold); }
 
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(8px); }

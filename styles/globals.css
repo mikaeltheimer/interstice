@@ -3,14 +3,21 @@
 :root {
   --void: #0a0a0f;
   --room: #0f0f1a;
-  --text: #e8e0d0;
-  --text-dim: #6a6280;
+
+  /* Text — minimum 4.5:1 contrast on --room */
+  --text:     #ede6d8;   /* warm white, unchanged */
+  --text-dim: #9e96b0;   /* was #6a6280 — lifted significantly */
+
   --inactive: #2a2a3e;
-  --waiting: #4a4260;
-  --gold: #c9b99a;
-  --gold-dim: #6a5a4a;
-  --cathedral: #7eb8c9;
-  --cathedral-dim: #2a5a6a;
+  --waiting:  #6a607e;   /* was #4a4260 — lighter, more visible */
+
+  /* Gold — warm accent */
+  --gold:     #c9b99a;   /* unchanged */
+  --gold-dim: #8a7a68;   /* was #6a5a4a — lifted */
+
+  /* Cathedral blue */
+  --cathedral:     #7eb8c9;  /* unchanged */
+  --cathedral-dim: #4a8a9a;  /* was #2a5a6a — lifted */
 }
 
 * {

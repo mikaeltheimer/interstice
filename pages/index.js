@@ -449,9 +449,9 @@ function Home() {
           font-family: 'Cormorant Garamond', serif; font-style: italic;
           font-size: 0.75rem; letter-spacing: 0.1em;
           color: var(--text-dim); text-decoration: none;
-          opacity: 0.4; transition: opacity 0.3s;
+          transition: color 0.3s;
         }
-        .footer-link:hover { opacity: 0.8; }
+        .footer-link:hover { color: var(--gold); }
         .footer-sep { font-family: 'Cormorant Garamond', serif; color: var(--text-dim); font-size: 0.75rem; opacity: 0.2; }
 
         /* WEBVIEW */
@@ -508,7 +508,6 @@ function Home() {
           font-size: 0.85rem;
           letter-spacing: 0.08em;
           color: var(--text-dim);
-          opacity: 0.5;
           text-align: center;
         }
 
