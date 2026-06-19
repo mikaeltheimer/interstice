@@ -256,6 +256,13 @@ function Home() {
   const isConnected = state === STATE.PORTAL_OPEN;
   const isDirective = state === STATE.PARTNER_HERE || state === STATE.PORTAL_OPEN;
   const btnState = getButtonState();
+
+  // Ambient light intensity class
+  const ambientClass = () => {
+    if (isConnected) return 'ambient-portal';
+    if (state === STATE.PARTNER_HERE) return 'ambient-gold';
+    return 'ambient-base'; // intro + waiting alone — strongest
+  };
   const showExperience = !webView && state !== STATE.INTRO && state !== STATE.ENDED && state !== STATE.FULL;
   const BASE_URL = 'https://interstice.studioexistence.com';
 
@@ -282,6 +289,9 @@ function Home() {
       </Head>
 
       <div className={`room ${isConnected ? 'room-lit' : ''}`}>
+
+        {/* AMBIENT LIGHT */}
+        <div className={`ambient ${ambientClass()}`} />
 
         {/* LANG TOGGLE */}
         {state !== STATE.PORTAL_OPEN && (
@@ -395,7 +405,7 @@ function Home() {
         {/* FOOTER */}
         {!webView && (
           <div className="footer">
-            <Link href="/about" className="footer-link">{t.aboutLink}</Link>
+            <Link href={`/about?lang=${lang}`} className="footer-link">{t.aboutLink}</Link>
             <span className="footer-sep">·</span>
             <a href="https://studioexistence.com" target="_blank" rel="noopener noreferrer" className="footer-link">{t.footer}</a>
           </div>
@@ -414,6 +424,57 @@ function Home() {
           position: relative;
         }
         .room-lit { background: #0d1a24; }
+
+        /* ── AMBIENT LIGHT ── */
+        .ambient {
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          border-radius: inherit;
+          transition: opacity 2s ease;
+        }
+
+        /* Intro + waiting alone — strong blue glow, pulses slowly */
+        .ambient.ambient-base {
+          background: radial-gradient(ellipse 70% 60% at 50% 50%,
+            rgba(126, 184, 201, 0.18) 0%,
+            rgba(126, 184, 201, 0.07) 40%,
+            transparent 70%
+          );
+          animation: ambientBase 4s ease-in-out infinite;
+        }
+        @keyframes ambientBase {
+          0%, 100% { opacity: 0.8; transform: scale(1); }
+          50%       { opacity: 1;   transform: scale(1.08); }
+        }
+
+        /* Partner present — warm gold glow */
+        .ambient.ambient-gold {
+          background: radial-gradient(ellipse 65% 55% at 50% 50%,
+            rgba(201, 185, 154, 0.14) 0%,
+            rgba(201, 185, 154, 0.05) 45%,
+            transparent 70%
+          );
+          animation: ambientGold 2.5s ease-in-out infinite;
+        }
+        @keyframes ambientGold {
+          0%, 100% { opacity: 0.75; transform: scale(1); }
+          50%       { opacity: 1;    transform: scale(1.06); }
+        }
+
+        /* Connected — cathedral blue, intense */
+        .ambient.ambient-portal {
+          background: radial-gradient(ellipse 75% 65% at 50% 50%,
+            rgba(126, 184, 201, 0.22) 0%,
+            rgba(126, 184, 201, 0.08) 45%,
+            transparent 70%
+          );
+          animation: ambientPortal 3s ease-in-out infinite;
+        }
+        @keyframes ambientPortal {
+          0%, 100% { opacity: 0.85; transform: scale(1); }
+          50%       { opacity: 1;    transform: scale(1.1); }
+        }
 
         .lang-toggle {
           position: absolute;
@@ -448,7 +509,7 @@ function Home() {
         .footer-link {
           font-family: 'Cormorant Garamond', serif; font-style: italic;
           font-size: 0.75rem; letter-spacing: 0.1em;
-          color: var(--text-dim); text-decoration: none;
+          color: var(--link); text-decoration: none;
           transition: color 0.3s;
         }
         .footer-link:hover { color: var(--gold); }

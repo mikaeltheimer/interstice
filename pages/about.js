@@ -44,7 +44,17 @@ const COPY = {
 
 function About() {
   const [lang, setLang] = useState('fr');
+
   useEffect(() => { setLang(getBrowserLang()); }, []);
+
+  // Sync lang param from URL on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlLang = params.get('lang');
+    if (urlLang === 'fr' || urlLang === 'en') setLang(urlLang);
+    else setLang(getBrowserLang());
+  }, []);
+
   const t = COPY[lang];
 
   return (
@@ -56,29 +66,26 @@ function About() {
       </Head>
 
       <div className="page">
-
-        {/* Lang toggle */}
         <div className="lang-toggle">
           <button className={`lang-btn ${lang === 'fr' ? 'active' : ''}`} onClick={() => setLang('fr')}>FR</button>
           <span className="lang-sep">·</span>
           <button className={`lang-btn ${lang === 'en' ? 'active' : ''}`} onClick={() => setLang('en')}>EN</button>
         </div>
 
-        <div className="content">
-          {/* Back nav — styled like footer links */}
-          <Link href="/" className="nav-back">{t.nav}</Link>
+        {/* Ambient glow — same as main screen */}
+        <div className="ambient" />
 
-          <h1 className="heading">{t.heading}</h1>
-          <p className="sub">{t.sub}</p>
-
-          <div className="body">
+        <div className="card-wrap">
+          <div className="card">
+            <Link href={`/?lang=${lang}`} className="nav-back">{t.nav}</Link>
+            <h1 className="heading">{t.heading}</h1>
+            <p className="card-sub">{t.sub}</p>
+            <div className="divider" />
             {t.body.map((para, i) => (
               <p key={i} className={i === 2 ? 'para para-main' : 'para'}>{para}</p>
             ))}
+            <Link href={`/?lang=${lang}`} className="cta">{t.cta}</Link>
           </div>
-
-          {/* CTA — styled like enter-btn */}
-          <Link href="/" className="enter-btn">{t.cta}</Link>
         </div>
 
         <div className="footer">
@@ -87,7 +94,6 @@ function About() {
       </div>
 
       <style jsx>{`
-        /* Reset overflow so page can scroll */
         :global(html), :global(body), :global(#__next) {
           overflow: auto !important;
           height: auto !important;
@@ -100,122 +106,115 @@ function About() {
           display: flex;
           flex-direction: column;
           align-items: center;
-          padding: 5rem 2rem 6rem;
+          padding: 5rem 1.5rem 5rem;
           position: relative;
         }
 
-        /* Lang toggle — identical to index */
-        .lang-toggle {
+        /* Same ambient light as main screen */
+        .ambient {
           position: fixed;
-          top: 1.5rem;
-          right: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.4rem;
-          z-index: 10;
+          inset: 0;
+          background: radial-gradient(ellipse 70% 60% at 50% 50%,
+            rgba(126, 184, 201, 0.13) 0%,
+            rgba(126, 184, 201, 0.05) 40%,
+            transparent 70%
+          );
+          animation: ambientPulse 4s ease-in-out infinite;
+          pointer-events: none;
+          z-index: 0;
+        }
+        @keyframes ambientPulse {
+          0%, 100% { opacity: 0.7; transform: scale(1); }
+          50%       { opacity: 1;   transform: scale(1.06); }
+        }
+
+        .lang-toggle {
+          position: fixed; top: 1.5rem; right: 1.5rem;
+          display: flex; align-items: center; gap: 0.4rem; z-index: 10;
         }
         .lang-btn {
           background: none; border: none; cursor: pointer;
           font-family: 'Cormorant Garamond', serif; font-style: italic;
           font-size: 0.85rem; letter-spacing: 0.12em;
-          color: var(--text-dim); padding: 0;
-          transition: color 0.3s; opacity: 0.5;
+          color: var(--link); padding: 0; transition: color 0.3s;
         }
-        .lang-btn.active { opacity: 1; color: var(--text); }
-        .lang-btn:hover { opacity: 1; color: var(--gold); }
-        .lang-sep { font-family: 'Cormorant Garamond', serif; color: var(--text-dim); font-size: 0.85rem; opacity: 0.3; }
+        .lang-btn.active { color: var(--text); }
+        .lang-btn:hover  { color: var(--gold); }
+        .lang-sep { font-family: 'Cormorant Garamond', serif; color: var(--link); font-size: 0.85rem; opacity: 0.4; }
 
-        /* Content */
-        .content {
-          max-width: 580px;
-          width: 100%;
-          display: flex;
-          flex-direction: column;
-          gap: 1.75rem;
+        .card-wrap {
+          position: relative; z-index: 1;
+          width: 100%; max-width: 580px;
           animation: fadeIn 1s ease;
         }
 
-        /* Back nav — matches footer-link style */
-        .nav-back {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-size: 0.85rem;
-          letter-spacing: 0.12em;
-          color: var(--text-dim);
-          text-decoration: none;
-          transition: color 0.3s;
-          margin-bottom: 0.5rem;
-          display: inline-block;
+        /* White card floating on dark background */
+        .card {
+          background: #f5f0e8;
+          border-radius: 2px;
+          padding: 2.5rem 2.2rem 2.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1.4rem;
+          box-shadow: 0 12px 80px rgba(0,0,0,0.6), 0 2px 16px rgba(0,0,0,0.3);
         }
-        .nav-back:hover { color: var(--gold); }
+
+        .nav-back {
+          font-family: 'Cormorant Garamond', serif; font-style: italic;
+          font-size: 0.85rem; letter-spacing: 0.1em;
+          color: var(--gold-dim); text-decoration: none;
+          transition: color 0.3s; margin-bottom: 0.25rem;
+        }
+        .nav-back:hover { color: #8a6a40; }
 
         .heading {
           font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(2.5rem, 8vw, 4rem);
-          font-weight: 300;
-          letter-spacing: 0.2em;
-          color: var(--text);
-          margin: 0;
-        }
-        .sub {
-          font-family: 'Cormorant Garamond', serif;
-          font-style: italic;
-          font-size: 0.9rem;
-          letter-spacing: 0.1em;
-          color: var(--text-dim);
-          margin: -0.75rem 0 0.5rem;
-          opacity: 0.6;
+          font-size: clamp(2.2rem, 7vw, 3.2rem);
+          font-weight: 300; letter-spacing: 0.2em;
+          color: #1a1520; margin: 0;
         }
 
-        /* Body text — brighter than before */
-        .body { display: flex; flex-direction: column; gap: 1.25rem; }
+        .card-sub {
+          font-family: 'Cormorant Garamond', serif; font-style: italic;
+          font-size: 0.85rem; letter-spacing: 0.08em;
+          color: #8a7a68; margin-top: -0.75rem;
+        }
+
+        .divider { height: 1px; background: rgba(0,0,0,0.1); }
+
         .para {
-          font-family: 'Cormorant Garamond', serif;
-          font-size: clamp(1.05rem, 2.5vw, 1.2rem);
-          line-height: 1.9;
-          color: #b8b0a8;
-          letter-spacing: 0.03em;
-          margin: 0;
-        }
-        .para-main {
-          color: var(--text);
-          font-size: clamp(1.1rem, 2.8vw, 1.28rem);
-          border-left: 1px solid var(--gold-dim);
-          padding-left: 1.5rem;
-          margin: 0.25rem 0;
-        }
-
-        /* CTA — identical to enter-btn on index */
-        .enter-btn {
-          display: inline-block;
-          margin-top: 0.5rem;
-          background: none;
-          border: 1px solid var(--waiting);
-          color: var(--text);
           font-family: 'Inter', sans-serif;
-          font-size: 0.85rem;
-          font-weight: 300;
-          letter-spacing: 0.25em;
-          text-transform: uppercase;
-          padding: 0.9rem 2.5rem;
-          text-decoration: none;
-          transition: border-color 0.4s, color 0.4s;
-          align-self: flex-start;
-          cursor: pointer;
+          font-size: clamp(0.85rem, 2vw, 0.95rem);
+          font-weight: 300; line-height: 1.9;
+          color: #3a3020; margin: 0;
         }
-        .enter-btn:hover { border-color: var(--gold); color: var(--gold); }
 
-        /* Footer */
+        .para-main {
+          color: #2a2015;
+          border-left: 2px solid var(--gold);
+          padding-left: 1.2rem;
+        }
+
+        .cta {
+          display: inline-block; margin-top: 0.5rem;
+          background: none; border: 1px solid #c9b99a;
+          color: #2a2015; font-family: 'Inter', sans-serif;
+          font-size: 0.78rem; font-weight: 300;
+          letter-spacing: 0.22em; text-transform: uppercase;
+          padding: 0.85rem 2rem; text-decoration: none;
+          transition: border-color 0.4s, color 0.4s;
+          align-self: flex-start; cursor: pointer;
+        }
+        .cta:hover { border-color: #8a6a40; color: #8a6a40; }
+
         .footer {
-          margin-top: 4rem;
-          display: flex;
-          justify-content: center;
+          position: relative; z-index: 1;
+          margin-top: 2.5rem;
         }
         .footer-link {
           font-family: 'Cormorant Garamond', serif; font-style: italic;
           font-size: 0.75rem; letter-spacing: 0.1em;
-          color: var(--text-dim); text-decoration: none;
-          transition: color 0.3s;
+          color: var(--link); text-decoration: none; transition: color 0.3s;
         }
         .footer-link:hover { color: var(--gold); }
 

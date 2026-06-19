@@ -3,28 +3,18 @@
 :root {
   --void: #0a0a0f;
   --room: #0f0f1a;
-
-  /* Text — minimum 4.5:1 contrast on --room */
-  --text:     #ede6d8;   /* warm white, unchanged */
-  --text-dim: #9e96b0;   /* was #6a6280 — lifted significantly */
-
-  --inactive: #2a2a3e;
-  --waiting:  #6a607e;   /* was #4a4260 — lighter, more visible */
-
-  /* Gold — warm accent */
-  --gold:     #c9b99a;   /* unchanged */
-  --gold-dim: #8a7a68;   /* was #6a5a4a — lifted */
-
-  /* Cathedral blue */
-  --cathedral:     #7eb8c9;  /* unchanged */
-  --cathedral-dim: #4a8a9a;  /* was #2a5a6a — lifted */
+  --text:          #ede6d8;
+  --text-dim:      #9e96b0;
+  --inactive:      #2a2a3e;
+  --waiting:       #6a607e;
+  --gold:          #c9b99a;
+  --gold-dim:      #8a7a68;
+  --cathedral:     #7eb8c9;
+  --cathedral-dim: #4a8a9a;
+  --link:          #8a8278;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
@@ -38,6 +28,4 @@ html, body {
   -webkit-user-select: none;
 }
 
-#__next {
-  height: 100%;
-}
+#__next { height: 100%; }
