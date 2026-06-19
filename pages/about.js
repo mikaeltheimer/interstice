@@ -77,14 +77,14 @@ function About() {
 
         <div className="card-wrap">
           <div className="card">
-            <Link href={`/?lang=${lang}`} className="nav-back">{t.nav}</Link>
+            <a href={`/?lang=${lang}`} className="nav-back">{t.nav}</a>
             <h1 className="heading">{t.heading}</h1>
             <p className="card-sub">{t.sub}</p>
             <div className="divider" />
             {t.body.map((para, i) => (
               <p key={i} className={i === 2 ? 'para para-main' : 'para'}>{para}</p>
             ))}
-            <Link href={`/?lang=${lang}`} className="cta">{t.cta}</Link>
+            <a href={`/?lang=${lang}`} className="cta-link">{t.cta}</a>
           </div>
         </div>
 
@@ -159,13 +159,7 @@ function About() {
           box-shadow: 0 12px 80px rgba(0,0,0,0.6), 0 2px 16px rgba(0,0,0,0.3);
         }
 
-        .nav-back {
-          font-family: 'Cormorant Garamond', serif; font-style: italic;
-          font-size: 0.85rem; letter-spacing: 0.1em;
-          color: var(--gold-dim); text-decoration: none;
-          transition: color 0.3s; margin-bottom: 0.25rem;
-        }
-        .nav-back:hover { color: #8a6a40; }
+        .nav-back { margin-bottom: 0.25rem; }
 
         .heading {
           font-family: 'Cormorant Garamond', serif;
@@ -195,17 +189,7 @@ function About() {
           padding-left: 1.2rem;
         }
 
-        .cta {
-          display: inline-block; margin-top: 0.5rem;
-          background: none; border: 1px solid #c9b99a;
-          color: #2a2015; font-family: 'Inter', sans-serif;
-          font-size: 0.78rem; font-weight: 300;
-          letter-spacing: 0.22em; text-transform: uppercase;
-          padding: 0.85rem 2rem; text-decoration: none;
-          transition: border-color 0.4s, color 0.4s;
-          align-self: flex-start; cursor: pointer;
-        }
-        .cta:hover { border-color: #8a6a40; color: #8a6a40; }
+        .cta-link { margin-top: 0.5rem; align-self: flex-start; }
 
         .footer {
           position: relative; z-index: 1;

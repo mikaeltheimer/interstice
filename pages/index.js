@@ -506,13 +506,7 @@ function Home() {
           gap: 0.6rem;
           white-space: nowrap;
         }
-        .footer-link {
-          font-family: 'Cormorant Garamond', serif; font-style: italic;
-          font-size: 0.75rem; letter-spacing: 0.1em;
-          color: var(--link); text-decoration: none;
-          transition: color 0.3s;
-        }
-        .footer-link:hover { color: var(--gold); }
+        /* .footer-link styles are in globals.css */
         .footer-sep { font-family: 'Cormorant Garamond', serif; color: var(--text-dim); font-size: 0.75rem; opacity: 0.2; }
 
         /* WEBVIEW */
