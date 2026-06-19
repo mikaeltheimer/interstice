@@ -143,13 +143,23 @@ export function useWebRTC(socketRef, localStreamRef) {
       console.log('[audio] AudioContext created, state:', ctx.state);
     }
 
-    const peer = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' },
-        { urls: 'stun:stun2.l.google.com:19302' },
-      ],
-    });
+    // Fetch ICE servers (includes TURN credentials from server)
+    let iceServers = [
+      { urls: 'stun:stun.l.google.com:19302' },
+      { urls: 'stun:stun1.l.google.com:19302' },
+    ];
+    try {
+      const res = await fetch('/api/turn');
+      const data = await res.json();
+      if (data.iceServers) {
+        iceServers = data.iceServers;
+        console.log('[webrtc] TURN servers loaded:', iceServers.length);
+      }
+    } catch (e) {
+      console.warn('[webrtc] Failed to fetch TURN config, using STUN only:', e);
+    }
+
+    const peer = new RTCPeerConnection({ iceServers });
     peerRef.current = peer;
 
     localStreamRef.current.getTracks().forEach(track => {

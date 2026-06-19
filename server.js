@@ -36,6 +36,23 @@ app.prepare().then(() => {
       res.end(JSON.stringify({ totalConnections }));
       return;
     }
+
+    if (parsedUrl.pathname === '/api/turn') {
+      const username = process.env.TURN_USERNAME || '';
+      const credential = process.env.TURN_CREDENTIAL || '';
+      const turnUrl = process.env.TURN_URL || 'turn:global.turn.metered.ca:80';
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: turnUrl, username, credential },
+          { urls: turnUrl.replace(':80', ':443'), username, credential },
+          { urls: turnUrl.replace('turn:', 'turns:').replace(':80', ':443'), username, credential },
+        ]
+      }));
+      return;
+    }
     handle(req, res, parsedUrl);
   });
 
