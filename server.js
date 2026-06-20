@@ -25,7 +25,7 @@ function findWaitingRoom() {
 }
 
 app.prepare().then(() => {
-  const httpServer = createServer((req, res) => {
+  const httpServer = createServer(async (req, res) => {
     const parsedUrl = parse(req.url, true);
 
     if (parsedUrl.pathname === '/api/stats') {
@@ -35,19 +35,33 @@ app.prepare().then(() => {
     }
 
     if (parsedUrl.pathname === '/api/turn') {
-      const username = process.env.TURN_USERNAME || '';
-      const credential = process.env.TURN_CREDENTIAL || '';
-      const turnUrl = process.env.TURN_URL || 'turn:global.turn.metered.ca:80';
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({
-        iceServers: [
+      try {
+        const apiKey = process.env.METERED_API_KEY || '';
+        const appName = process.env.METERED_APP_NAME || 'interstice';
+        // Fetch fresh credentials from Metered REST API
+        const meteredUrl = `https://${appName}.metered.live/api/v1/turn/credentials?apiKey=${apiKey}`;
+        const https = require('https');
+        const iceServers = await new Promise((resolve, reject) => {
+          https.get(meteredUrl, (r) => {
+            let data = '';
+            r.on('data', chunk => data += chunk);
+            r.on('end', () => {
+              try { resolve(JSON.parse(data)); }
+              catch (e) { reject(e); }
+            });
+          }).on('error', reject);
+        });
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ iceServers }));
+      } catch (e) {
+        console.error('TURN fetch error:', e.message);
+        // Fallback to STUN only
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ iceServers: [
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: turnUrl, username, credential },
-          { urls: turnUrl.replace(':80', ':443'), username, credential },
-          { urls: turnUrl.replace('turn:', 'turns:').replace(':80', ':443'), username, credential },
-        ]
-      }));
+        ]}));
+      }
       return;
     }
 
