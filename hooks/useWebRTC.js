@@ -138,7 +138,7 @@ export function useWebRTC(socketRef, localStreamRef) {
     }
   }, []);
 
-  const startCall = useCallback(async (isInitiator) => {
+  const startCall = useCallback(async (isInitiator, onConnected) => {
     console.log('[webrtc] startCall, isInitiator:', isInitiator);
     iceCandidateQueue.current = [];
     remoteDescSet.current = false;
@@ -205,6 +205,8 @@ export function useWebRTC(socketRef, localStreamRef) {
       if ((peer.iceConnectionState === 'connected' || peer.iceConnectionState === 'completed') && pendingRemoteStream) {
         setupAudioPipeline(pendingRemoteStream);
         pendingRemoteStream = null;
+        // Notify UI that connection is truly established
+        if (onConnected) onConnected();
       }
     };
 
